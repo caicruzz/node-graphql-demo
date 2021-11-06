@@ -82,6 +82,37 @@ const Mutation = {
 
         return post
     },
+    updatePost(parent, { id, data }, { db }, info) {
+        const post = db.posts.find(post => post.id == id);
+
+        if (!post) {
+            throw new Error('Post not found');
+        }
+
+        if (data.author) {
+            const author = db.users.find(user => user.id === data.author)
+
+            if (!author) {
+                throw new Error('Author not found');
+            }
+
+            post.author = data.author;
+        }
+
+        if (typeof data.title === 'string') {
+            post.title = data.title;
+        }
+
+        if (typeof data.body === 'string') {
+            post.body = data.body;
+        }
+
+        if (data.published !== null) {
+            post.published = data.published;
+        }
+
+        return post;
+    },
     deletePost(parent, args, { db }, info) {
         const postIndex = db.posts.findIndex(post => post.id === args.id);
 
@@ -111,6 +142,19 @@ const Mutation = {
         db.comments.push(comment)
 
         return comment
+    },
+    updateComment(parent, { id, data }, { db }, info) {
+        const comment = db.comments.find(comment => comment.id === id);
+
+        if (!comment) {
+            throw new Error('comment not found');
+        }
+
+        if (typeof data.text === 'string') {
+            comment.text = data.text;
+        }
+
+        return comment;
     },
     deleteComment(parent, args, { db }, info ) {
         const commentIndex = db.comments.findIndex(comment => comment.id === args.id);
